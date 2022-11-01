@@ -1,19 +1,3 @@
-"""
-Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-  
-  Licensed under the Apache License, Version 2.0 (the "License").
-  You may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-  
-      http://www.apache.org/licenses/LICENSE-2.0
-  
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-"""
-
 import time
 import numpy as np
 import pandas as pd
@@ -143,7 +127,7 @@ class DGHL(object):
 
         return p_0
 
-    def get_batch(self, X, mask, batch_size, p_0_chains, z_persistent, shuffle=True):#(batch_size*window_hierarchy, n_features, 1, window_size)
+    def get_batch(self, X, mask, batch_size, p_0_chains, z_persistent, shuffle=False):#(batch_size*window_hierarchy, n_features, 1, window_size)
         """
         X tensor of shape (n_windows, n_features, 1, window_size*A_L)
         """
@@ -290,7 +274,7 @@ class DGHL(object):
         z, _ = self.get_z(z=z_0, x=x, m=m, n_iters=z_iters, with_noise=False)
         m = torch.ones(m.shape).to(self.device) # In forward of generator, mask is all ones to reconstruct everything
         x_hat = self.generator(z, m)
-
+        
         # Return to window_size * window_hierarchy size
         x = x.swapaxes(0,2)
         x = x.reshape(1,self.n_channels,-1, self.window_size*self.window_hierarchy[-1])

@@ -116,12 +116,13 @@ def de_unfold(x_windows, mask_windows, window_step):
     return x, mask
 
 def analyze(x, x_hat, n_features, filename):
-    result = pd.DataFrame(columns=['true_mean','true_var','true_autocorr','hat_mean','hat_var','hat_autocorr','correlation','R2_Square'])
+    result = pd.DataFrame(columns=['true_mean','true_var','hat_mean','hat_var','correlation','R-Square','MSE'])
     for i in range(n_features):
         temp1 = np.array(x[i])
         temp2 = np.array(x_hat[i])
         SST = np.array([i**2 for i in (temp1-temp1.mean())]).sum()
         SSE = np.array([i**2 for i in (temp1-temp2)]).sum()
-        series = pd.Series({'true_mean':temp1.mean(),'true_var':temp1.var(),'true_autocorr':get_auto_corr(temp1,240),'hat_mean':temp2.mean(),'hat_var':temp2.var(),'hat_autocorr':get_auto_corr(temp2,240),'correlation':np.corrcoef(temp1,temp2)[0][1],'R2_Square':1-SSE/SST},name=('Stock_'+str(i+1)))
+        MSE = np.array([i**2 for i in (temp1-temp2)]).mean()
+        series = pd.Series({'true_mean':temp1.mean(),'true_var':temp1.var(),'hat_mean':temp2.mean(),'hat_var':temp2.var(),'correlation':np.corrcoef(temp1,temp2)[0][1],'R-Square':1-SSE/SST,'MSE':MSE},name=('Stock_'+str(i+1)))
         result = result.append(series)
     result.to_csv(filename)
